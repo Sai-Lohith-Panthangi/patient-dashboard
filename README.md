@@ -97,14 +97,6 @@ https://fedskillstest.coalitiontechnologies.workers.dev
 - Uses **Basic Auth** (credentials are embedded in script.js)  
 - API returns patient records including diagnosis history, vitals, and labs  
 
----
-
-## 📸 Screenshots
-
-### Dashboard Layout  
-*(Add screenshot here if required, e.g. `/screenshots/dashboard.png`)*  
-
----
 
 ## 👨‍💻 Author
 
