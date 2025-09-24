@@ -1,0 +1,202 @@
+/* ===========================================================
+   Tech.Care Patients — Stylesheet
+   Author: Sai Lohith
+=========================================================== */
+
+/* ---------- 0) Design Tokens / Resets ---------- */
+:root{
+  --bg:#f6f8fb;          /* app background */
+  --surface:#ffffff;     /* card background */
+  --ink:#0f172a;         /* main text color */
+  --muted:#64748b;       /* secondary text */
+  --line:#e2e8f0;        /* borders */
+
+  /* chart/accent colors */
+  --sys:#8b5cf6;         /* systolic line */
+  --dia:#ec4899;         /* diastolic line */
+  --brand:#10b981;       /* primary button */
+
+  /* tiles backgrounds */
+  --tile-blue:#e0f2fe;
+  --tile-rose:#ffe7ee;
+  --tile-pink:#ffe8f1;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:'Inter',sans-serif;
+  color:var(--ink);
+  background:var(--bg);
+}
+img{display:block;max-width:100%}
+.hidden{display:none}
+.muted{color:var(--muted)}
+
+/* Common small pieces */
+.input{
+  border:1px solid var(--line);
+  padding:10px 12px;
+  background:#fff;
+  color:inherit;
+}
+.input--pill{border-radius:999px}
+
+.btn{
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:999px;
+  padding:10px 14px;
+  cursor:pointer;
+}
+.btn--primary{
+  background:var(--brand);
+  border-color:transparent;
+  color:#fff;
+  font-weight:600;
+}
+.card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:16px;
+  box-shadow:0 1px 2px rgba(2,6,23,.03),0 8px 24px rgba(2,6,23,.04);
+}
+.card--soft{ background:#faf5ff; border:1px solid var(--line) }
+
+.section-title{ margin:0 0 8px; font-size:18px; font-weight:700 }
+.sub-title{ margin:0 0 6px; font-size:14px; font-weight:600 }
+
+/* ---------- 1) Topbar ---------- */
+.topbar{
+  display:grid;
+  grid-template-columns:220px 1fr 280px;
+  align-items:center;
+  gap:16px;
+  padding:12px 16px;
+  background:var(--surface);
+  border-bottom:1px solid var(--line);
+}
+.brand{ display:flex; align-items:center; gap:10px }
+.logo{
+  width:28px; height:28px; border-radius:8px;
+  background:linear-gradient(135deg,#22d3ee,#a78bfa);
+  display:grid; place-items:center; color:#fff; font-weight:700;
+}
+.brand-name{ font-weight:700; letter-spacing:.2px }
+.tabs{ display:flex; gap:10px; justify-content:center }
+.tab{
+  padding:8px 12px; border-radius:999px;
+  border:1px solid var(--line); color:var(--muted); background:#fff;
+}
+.tab.active{ background:#eafff6; color:#065f46; border-color:#bbf7d0 }
+.user-chip{ justify-self:end; display:flex; align-items:center; gap:10px }
+.chip-avatar{ width:36px; height:36px; border-radius:50%; object-fit:cover }
+.chip-name{ font-weight:600 }
+.chip-role{ font-size:12px; color:var(--muted) }
+.chip-gear{ border:1px solid var(--line); background:#fff; border-radius:8px; padding:6px 8px; cursor:pointer }
+
+/* ---------- 2) App Grid ---------- */
+/* 3 columns: rail (fixed), center (fluid), profile (fixed) */
+.app{
+  display:grid;
+  grid-template-columns:300px 1fr 340px;
+  gap:16px;
+  padding:16px;
+  min-height:calc(100vh - 66px); /* account for topbar height */
+}
+
+/* 2a) Patients rail */
+.rail{ display:flex; flex-direction:column }
+.rail__header{ display:flex; flex-direction:column; gap:8px; margin-bottom:8px }
+.rail__list{
+  list-style:none; margin:8px 0 0; padding:0;
+  display:flex; flex-direction:column; gap:8px;
+  overflow:auto; max-height:calc(100vh - 210px); /* keeps page from scrolling */
+  overscroll-behavior:contain;
+}
+.rail-item{
+  display:flex; align-items:center; gap:10px;
+  padding:10px; border:1px solid var(--line); border-radius:12px;
+  background:#fff; cursor:pointer; transition:all .15s;
+}
+.rail-item:hover{ transform:translateY(-1px); box-shadow:0 6px 18px rgba(2,6,23,.06) }
+.rail-item.active{ background:#e6fbf4; border-color:#bbf7d0 }
+.rail-avatar{ width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid var(--line) }
+.rail-meta{ display:flex; flex-direction:column; font-size:12px }
+.rail-name{ font-weight:600 }
+.rail-sub{ color:var(--muted) }
+
+/* 2b) Center column layout */
+.center{
+  display:grid;
+  grid-template-rows:auto auto auto; /* BP card, tiles, diag list */
+  gap:16px;
+}
+
+/* Blood Pressure card */
+.card__head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px }
+.bp__grid{ display:grid; grid-template-columns:2fr 240px; gap:16px }
+.bp__chart{ padding:14px; border-radius:14px }
+.bp__chart-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:4px }
+.legend{ display:flex; align-items:center; gap:12px; color:var(--muted); font-size:12px }
+.dot{ width:10px; height:10px; border-radius:50%; display:inline-block }
+.dot--sys{ background:var(--sys) }
+.dot--dia{ background:var(--dia) }
+.bp__stats{ display:grid; gap:12px }
+.stat{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px }
+.stat__label{ font-size:12px; color:var(--muted); text-transform:uppercase }
+.stat__value{ font-size:28px; font-weight:800 }
+.stat__note{ font-size:12px; color:var(--muted) }
+.empty{ color:var(--muted); font-size:13px }
+
+/* Vitals tiles */
+.tiles{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px }
+.tile{
+  border:1px solid var(--line);
+  border-radius:16px; padding:16px;
+  display:grid; gap:6px;
+  box-shadow:0 1px 2px rgba(2,6,23,.03),0 8px 24px rgba(2,6,23,.04);
+}
+.tile__title{ color:#0b1220 }
+.tile__value{ font-size:28px; font-weight:800 }
+.tile__note{ font-size:12px; color:var(--muted) }
+.tile__icon{ font-size:22px }
+.tile--blue{ background:var(--tile-blue) }
+.tile--rose{ background:var(--tile-rose) }
+.tile--pink{ background:var(--tile-pink) }
+.tile canvas{ width:100% } /* sparkline canvases */
+
+/* 2c) Profile panel (right column) */
+.profile__head{ display:grid; justify-items:center; gap:8px; margin-bottom:8px }
+.profile__avatar{ width:88px; height:88px; border-radius:50%; object-fit:cover; border:2px solid var(--line) }
+.profile__name{ font-weight:700; font-size:20px }
+.kv{ display:grid; gap:10px; margin:8px 0 12px }
+.kv__row{ display:flex; justify-content:space-between; gap:20px; padding:10px; border:1px solid var(--line); border-radius:12px; background:#f8fafc }
+.kv__row dt{ color:var(--muted) }
+.profile__labs{ margin-top:16px }
+.lab-list{
+  list-style:none; margin:0; padding:0;
+  display:grid; gap:8px; max-height:220px; overflow:auto;
+}
+.lab-list li{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:10px; border:1px solid var(--line); border-radius:12px;
+}
+.lab-list li::after{ content:"⇩"; font-weight:700; color:var(--muted) }
+
+/* Table */
+.table{ width:100%; border-collapse:collapse }
+.table th,.table td{ border:1px solid var(--line); padding:10px; vertical-align:top }
+.table th{ background:#f1f5f9; text-align:left }
+
+/* Footer */
+.foot{ padding:16px; text-align:center; color:var(--muted) }
+
+/* ---------- 3) Responsive tweaks ---------- */
+@media (max-width:1200px){
+  .app{ grid-template-columns:260px 1fr }   /* collapse right panel below */
+  .profile{ grid-column:1 / -1; order:4 }  /* move profile under center */
+  .bp__grid{ grid-template-columns:1fr }   /* chart above stats */
+  .tiles{ grid-template-columns:1fr }      /* stack vitals tiles */
+}

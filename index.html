@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!--
+    Patient Dashboard (Tech.Care style)
+    Author: Sai Lohith
+    Notes:
+    - Using Inter font for a clean UI feel
+    - Chart.js loaded from CDN for line charts and sparklines
+  -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tech.Care — Patients</title>
+
+  <!-- Fonts & main stylesheet -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./style.css" />
+
+  <!-- Charts library -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <!--
+    Top navigation bar:
+    - Left: brand
+    - Middle: fake tabs (non-functional here)
+    - Right: user chip
+  -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">▲</div>
+      <span class="brand-name">Tech.Care</span>
+    </div>
+
+    <nav class="tabs">
+      <a class="tab">Overview</a>
+      <a class="tab active">Patients</a>
+      <a class="tab">Schedule</a>
+      <a class="tab">Message</a>
+      <a class="tab">Transactions</a>
+    </nav>
+
+    <div class="user-chip">
+      <img class="chip-avatar" src="https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?q=80&w=120&auto=format&fit=crop" alt="User" />
+      <div>
+        <div class="chip-name">Dr. Jose Simmons</div>
+        <div class="chip-role">General Practitioner</div>
+      </div>
+      <button class="chip-gear" aria-label="Settings">⚙︎</button>
+    </div>
+  </header>
+
+  <!--
+    App grid:
+    - 3 columns: Patients rail, Center content, Profile panel
+    - Each area is its own card/grid to keep things organized
+  -->
+  <div class="app">
+    <!-- LEFT: Patients rail with search + list -->
+    <aside class="rail card">
+      <header class="rail__header">
+        <h2 class="section-title">Patients</h2>
+        <!-- Simple client-side search (debounced in JS) -->
+        <input id="search" class="input input--pill" placeholder="Search…" />
+      </header>
+
+      <!-- Populated in script.js → renderRail() -->
+      <ul id="patient-list" class="rail__list"></ul>
+    </aside>
+
+    <!-- CENTER: Main content (BP chart + tiles + diagnostic list) -->
+    <main class="center">
+      <!--
+        Blood Pressure block:
+        - Left: chart area
+        - Right: current systolic/diastolic small stats
+      -->
+      <section class="card bp">
+        <header class="card__head">
+          <h3 class="section-title">Diagnosis History</h3>
+          <span class="muted">Last 6 months</span>
+        </header>
+
+        <div class="bp__grid">
+          <div class="bp__chart card--soft">
+            <div class="bp__chart-head">
+              <h4 class="sub-title">Blood Pressure</h4>
+              <div class="legend">
+                <span class="dot dot--sys"></span>Systolic
+                <span class="dot dot--dia"></span>Diastolic
+              </div>
+            </div>
+
+            <!-- Main chart canvas; BP bands + lines drawn in JS -->
+            <canvas id="bpChart" height="140"></canvas>
+            <div id="bp-empty" class="empty hidden">No blood pressure data.</div>
+          </div>
+
+          <!-- Small side cards to show current values/levels -->
+          <aside class="bp__stats">
+            <div class="stat">
+              <div class="stat__label">Systolic</div>
+              <div id="stat-sys" class="stat__value">—</div>
+              <div id="stat-sys-note" class="stat__note">—</div>
+            </div>
+            <div class="stat">
+              <div class="stat__label">Diastolic</div>
+              <div id="stat-dia" class="stat__value">—</div>
+              <div id="stat-dia-note" class="stat__note">—</div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!--
+        Vitals tiles:
+        - Each tile has a big value and a tiny sparkline
+        - Data pulled from last 6 months of diagnosis history
+      -->
+      <section class="tiles">
+        <article class="tile tile--blue">
+          <div class="tile__icon">🫁</div>
+          <div class="tile__title">Respiratory Rate</div>
+          <div id="tile-rr" class="tile__value">—</div>
+          <canvas id="rrSpark" height="40"></canvas>
+          <div id="tile-rr-note" class="tile__note">—</div>
+        </article>
+
+        <article class="tile tile--rose">
+          <div class="tile__icon">🌡️</div>
+          <div class="tile__title">Temperature</div>
+          <div id="tile-temp" class="tile__value">—</div>
+          <canvas id="tempSpark" height="40"></canvas>
+          <div id="tile-temp-note" class="tile__note">—</div>
+        </article>
+
+        <article class="tile tile--pink">
+          <div class="tile__icon">❤️</div>
+          <div class="tile__title">Heart Rate</div>
+          <div id="tile-hr" class="tile__value">—</div>
+          <canvas id="hrSpark" height="40"></canvas>
+          <div id="tile-hr-note" class="tile__note">—</div>
+        </article>
+      </section>
+
+      <!--
+        Diagnostic list table:
+        - Data is normalized in JS (strings or objects, different keys)
+      -->
+      <section class="card">
+        <h3 class="section-title">Diagnostic List</h3>
+        <table class="table">
+          <thead>
+            <tr><th>Problem/Diagnosis</th><th>Description</th><th>Status</th></tr>
+          </thead>
+          <tbody id="diag-list-body"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <!-- RIGHT: Profile area with key/value info + lab results -->
+    <aside class="profile card">
+      <header class="profile__head">
+        <img id="patient-avatar" class="profile__avatar" alt="Profile picture" />
+        <div id="patient-name" class="profile__name">—</div>
+      </header>
+
+      <!-- Key facts displayed as K/V rows -->
+      <dl class="kv">
+        <div class="kv__row"><dt>📅 Date Of Birth</dt><dd id="patient-dob">—</dd></div>
+        <div class="kv__row"><dt>♀︎ Gender</dt><dd id="patient-gender">—</dd></div>
+        <div class="kv__row"><dt>📞 Contact Info.</dt><dd id="patient-phone">—</dd></div>
+        <div class="kv__row"><dt>🆘 Emergency Contacts</dt><dd id="patient-emergency">—</dd></div>
+        <div class="kv__row"><dt>🏦 Insurance Provider</dt><dd id="patient-insurance">—</dd></div>
+      </dl>
+
+      <button class="btn btn--primary">Show All Information</button>
+
+      <!-- Lab results list (click icons are decorative) -->
+      <section class="card profile__labs">
+        <h4 class="sub-title">Lab Results</h4>
+        <ul id="lab-results" class="lab-list"></ul>
+      </section>
+    </aside>
+  </div>
+
+  <!-- Footer credit -->
+  <footer class="foot">© FED Skills Test — Done by <strong>Sai Lohith</strong></footer>
+
+  <!-- App script (all logic lives here) -->
+  <script src="./script.js"></script>
+</body>
+</html>
